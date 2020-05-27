@@ -14,9 +14,21 @@ class SubcategoriesViewController: UIViewController {
     
     var subcategories: [Subcategory] = []
     var pageTitle = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = pageTitle
+        navigationItem.backBarButtonItem?.title = ""
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let cell = sender as? UITableViewCell, let index = subcategoryTableView.indexPath(for: cell), let vc = segue.destination as? ProductsViewController, segue.identifier == "showProductsFromSubcategory" {
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
+            vc.pageTitle = subcategories[index.row].name
+//            let id = subcategories[index.row].id
+        }
     }
 }
 
@@ -29,7 +41,7 @@ extension SubcategoriesViewController: UITableViewDataSource, UITableViewDelegat
         let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell") as! CategoryTableViewCell
         cell.categoryLabel.text = subcategories[indexPath.row].name
         let imageUrlString = subcategories[indexPath.row].iconImage
-        CategoriesLoader().getImage(string: imageUrlString, completion: { icon in
+        Loader().getImage(string: imageUrlString, completion: { icon in
             cell.categoryImageView.image = icon
         })
         return cell

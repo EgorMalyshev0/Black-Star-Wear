@@ -1,6 +1,6 @@
 import UIKit
 
-class CategoriesLoader {
+class Loader {
     
     func loadCategories(completion: @escaping([Category]) -> Void) {
         let url = URL(string: "https://blackstarshop.ru/index.php?route=api/v1/categories")!
@@ -15,10 +15,37 @@ class CategoriesLoader {
         var categories: [Category] = []
         let decoder = JSONDecoder()
         if let jsonCategories = try? decoder.decode([String:Category].self, from: json){
-            for (_, data) in jsonCategories {
+            var count = categories.count
+            for (id, data) in jsonCategories {
                 categories.append(data)
+                categories[count].id = id
+                count = categories.count
             }
             return categories
+        } else { return nil }
+    }
+    
+    func loadProduct(id: String, completion: @escaping([Product]) -> Void) {
+        let url = URL(string: "https://blackstarshop.ru/index.php?route=api/v1/products&cat_id=" + id)!
+        if let data = try? Data(contentsOf: url) {
+            if let loadedProducts = parseProducts(json: data) {
+                completion(loadedProducts)
+                print("Products: \(loadedProducts.count)")
+            } else { print("NO")}
+        }
+    }
+    
+    func parseProducts(json: Data) -> [Product]? {
+        var products: [Product] = []
+        let decoder = JSONDecoder()
+        if let jsonCategories = try? decoder.decode([String:Product].self, from: json){
+            var count = products.count
+            for (id, data) in jsonCategories {
+                products.append(data)
+                products[count].id = id
+                count = products.count
+            }
+            return products
         } else { return nil }
     }
     
