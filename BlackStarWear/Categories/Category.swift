@@ -1,42 +1,47 @@
 import Foundation
 
-struct Category: Codable {
-    var id: String?
-    let name: String
-    let subcategories: [Subcategory]
-    let image, iconImage, iconImageActive: String
-}
-
-struct Subcategory: Codable {
-    let id: Id
-    let name: String
-    let iconImage: String
-}
-
-enum Id: Codable {
-    case integer(Int)
-    case string(String)
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let x = try? container.decode(Int.self) {
-            self = .integer(x)
-            return
+class Category {
+    let id, name, image, iconImage, iconImageActive: String
+    var subcategories: [Subcategory]
+    
+    init?(id: String, data: NSDictionary) {
+        guard let name = data["name"] as? String,
+            let image = data["image"] as? String,
+            let iconImage = data["iconImage"] as? String,
+            let iconImageActive = data["iconImageActive"] as? String,
+            let subcategories = data["subcategories"] as? NSArray
+        else {
+            return nil
         }
-        if let x = try? container.decode(String.self) {
-            self = .string(x)
-            return
-        }
-        throw DecodingError.typeMismatch(Id.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for Id"))
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        switch self {
-        case .integer(let x):
-            try container.encode(x)
-        case .string(let x):
-            try container.encode(x)
+        self.id = id
+        self.name = name
+        self.image = image
+        self.iconImage = iconImage
+        self.iconImageActive = iconImageActive
+        self.subcategories = []
+        if subcategories.count != 0 {
+            for data in subcategories where data is NSDictionary {
+                if let subcategory = Subcategory(data: data as! NSDictionary) {
+                    self.subcategories.append(subcategory)
+                }
+            }
         }
     }
 }
+
+class Subcategory {
+    let id, name, iconImage: String
+    
+    init?(data: NSDictionary) {
+        guard let id = data["id"] as? String,
+            let name = data["name"] as? String,
+            let iconImage = data["iconImage"] as? String
+        else {
+            return nil
+        }
+        self.id = id
+        self.name = name
+        self.iconImage = iconImage
+    }
+}
+

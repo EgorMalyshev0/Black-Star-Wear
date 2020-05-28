@@ -4,51 +4,70 @@ class Loader {
     
     func loadCategories(completion: @escaping([Category]) -> Void) {
         let url = URL(string: "https://blackstarshop.ru/index.php?route=api/v1/categories")!
-        if let data = try? Data(contentsOf: url) {
-            if let loadedCategories = parseCategories(json: data) {
-                completion(loadedCategories)
-            } else { print("NOPE")}
-        }
-    }
-    
-    func parseCategories(json: Data) -> [Category]? {
-        var categories: [Category] = []
-        let decoder = JSONDecoder()
-        if let jsonCategories = try? decoder.decode([String:Category].self, from: json){
-            var count = categories.count
-            for (id, data) in jsonCategories {
-                categories.append(data)
-                categories[count].id = id
-                count = categories.count
+        let request = URLRequest(url: url)
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let data = data,
+            let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments),
+                let jsonDict = json as? NSDictionary {
+                var categories: [Category] = []
+                for (key, data) in jsonDict where data is NSDictionary {
+                    if let category = Category(id: key as! String, data: data as! NSDictionary) {
+                        categories.append(category)
+                    }
+                }
+                DispatchQueue.main.async {
+                    completion(categories)
+                }
             }
-            return categories
-        } else { return nil }
+        }
+        task.resume()
     }
     
-    func loadProduct(id: String, completion: @escaping([Product]) -> Void) {
+    func loadProducts(id: String, completion: @escaping([Product]) -> Void) {
         let url = URL(string: "https://blackstarshop.ru/index.php?route=api/v1/products&cat_id=" + id)!
-        if let data = try? Data(contentsOf: url) {
-            if let loadedProducts = parseProducts(json: data) {
-                completion(loadedProducts)
-                print("Products: \(loadedProducts.count)")
-            } else { print("NO")}
-        }
-    }
-    
-    func parseProducts(json: Data) -> [Product]? {
-        var products: [Product] = []
-        let decoder = JSONDecoder()
-        if let jsonCategories = try? decoder.decode([String:Product].self, from: json){
-            var count = products.count
-            for (id, data) in jsonCategories {
-                products.append(data)
-                products[count].id = id
-                count = products.count
+        let request = URLRequest(url: url)
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let data = data,
+            let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments),
+                let jsonDict = json as? NSDictionary {
+                var products: [Product] = []
+                for (key, data) in jsonDict where data is NSDictionary {
+                    if let product = Product(id: key as! String, data: data as! NSDictionary) {
+                        products.append(product)
+                    }
+                }
+                DispatchQueue.main.async {
+                    completion(products)
+                }
             }
-            return products
-        } else { return nil }
+        }
+        task.resume()
     }
-    
+
+//    func loadProduct(id: String, completion: @escaping([Product]) -> Void) {
+//        let url = URL(string: "https://blackstarshop.ru/index.php?route=api/v1/products&cat_id=" + id)!
+//        if let data = try? Data(contentsOf: url) {
+//            if let loadedProducts = parseProducts(json: data) {
+//                completion(loadedProducts)
+//                print("Products: \(loadedProducts.count)")
+//            } else { print("NO")}
+//        }
+//    }
+//
+//    func parseProducts(json: Data) -> [Product]? {
+//        var products: [Product] = []
+//        let decoder = JSONDecoder()
+//        if let jsonCategories = try? decoder.decode([String:Product].self, from: json){
+//            var count = products.count
+//            for (id, data) in jsonCategories {
+//                products.append(data)
+//                products[count].id = id
+//                count = products.count
+//            }
+//            return products
+//        } else { return nil }
+//    }
+
     func getImage (string: String, completion: @escaping(UIImage) -> Void) {
         DispatchQueue.global().async {
             let blackStarUrl = "https://blackstarshop.ru/"
