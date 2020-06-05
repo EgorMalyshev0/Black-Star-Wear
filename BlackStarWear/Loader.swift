@@ -28,7 +28,7 @@ class Loader {
         let request = URLRequest(url: url)
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if let data = data,
-            let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments),
+                let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments),
                 let jsonDict = json as? NSDictionary {
                 var products: [Product] = []
                 for (key, data) in jsonDict where data is NSDictionary {
@@ -43,30 +43,6 @@ class Loader {
         }
         task.resume()
     }
-
-//    func loadProduct(id: String, completion: @escaping([Product]) -> Void) {
-//        let url = URL(string: "https://blackstarshop.ru/index.php?route=api/v1/products&cat_id=" + id)!
-//        if let data = try? Data(contentsOf: url) {
-//            if let loadedProducts = parseProducts(json: data) {
-//                completion(loadedProducts)
-//                print("Products: \(loadedProducts.count)")
-//            } else { print("NO")}
-//        }
-//    }
-//
-//    func parseProducts(json: Data) -> [Product]? {
-//        var products: [Product] = []
-//        let decoder = JSONDecoder()
-//        if let jsonCategories = try? decoder.decode([String:Product].self, from: json){
-//            var count = products.count
-//            for (id, data) in jsonCategories {
-//                products.append(data)
-//                products[count].id = id
-//                count = products.count
-//            }
-//            return products
-//        } else { return nil }
-//    }
 
     func getImage (string: String, completion: @escaping(UIImage) -> Void) {
         DispatchQueue.global().async {

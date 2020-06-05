@@ -16,6 +16,11 @@ class ProductsViewController: UIViewController {
             self.productsCollectionView.reloadData()
         }
     }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let cell = sender as? UICollectionViewCell, let index = productsCollectionView.indexPath(for: cell), segue.identifier == "showProductDetails", let vc = segue.destination as? ProductDetailsViewController {
+            vc.product = products[index.row]
+        }
+    }
 }
 
 extension ProductsViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
@@ -31,19 +36,15 @@ extension ProductsViewController: UICollectionViewDelegateFlowLayout, UICollecti
         Loader().getImage(string: str) { (img) in
             cell.productImageView.image = img
         }
-        if let doublePrice = Double(products[indexPath.row].price) {
-            let intPrice = Int(doublePrice)
-            cell.priceLabel.text = "\(intPrice) руб."
-        } else {cell.priceLabel.text = products[indexPath.row].price}
+        cell.priceLabel.text = "\(products[indexPath.row].intPrice) руб."
         
-        if let oldPrice = products[indexPath.row].oldPrice {
-            if let doubleOldPrice = Double(oldPrice) {
-                let intOldPrice = Int(doubleOldPrice)
+        if products[indexPath.row].oldPrice != nil {
+            if let intOldPrice = products[indexPath.row].intOldPrice {
                 cell.oldPriceLabel.text = "\(intOldPrice) руб."
                 let attrOldPrice = NSMutableAttributedString(string: "\(intOldPrice) руб.")
                 attrOldPrice.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 1, range: NSMakeRange(0, attrOldPrice.length))
                 cell.oldPriceLabel.attributedText = attrOldPrice
-            } else {cell.priceLabel.text = oldPrice}
+            }
             if let tag = products[indexPath.row].tag {
                 cell.tagLabel.text = tag
             } else {
@@ -69,4 +70,8 @@ extension ProductsViewController: UICollectionViewDelegateFlowLayout, UICollecti
         return CGSize(width: w, height: h)
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        
+    }
 }

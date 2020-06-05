@@ -13,7 +13,6 @@ class CategoryTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
     override func prepareForReuse() {
-        super.prepareForReuse()
         self.categoryImageView.image = nil
     }
 }

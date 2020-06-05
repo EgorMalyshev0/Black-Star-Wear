@@ -70,7 +70,6 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
             Loader().getImage(string: imageUrlString, completion: { icon in
                 cell.categoryImageView.image = icon
             })
-            cell.categoryImageView.layer.cornerRadius = cell.categoryImageView.frame.width / 2
             return cell
         } else {
             cell.categoryLabel.text = subcategories[indexPath.row].name
@@ -78,7 +77,6 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
             Loader().getImage(string: imageUrlString, completion: { icon in
                 cell.categoryImageView.image = icon
             })
-            cell.categoryImageView.layer.cornerRadius = cell.categoryImageView.frame.width / 2
             return cell
         }
     }
