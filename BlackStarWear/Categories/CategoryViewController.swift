@@ -1,4 +1,5 @@
 import UIKit
+import SVProgressHUD
 
 class CategoryViewController: UIViewController {
 
@@ -16,6 +17,7 @@ class CategoryViewController: UIViewController {
         }
         changeNavigationItem()
     }
+    
     @objc func backbtn() {
         categoriesShowed = !categoriesShowed
         categoriesTableView.reloadData()
@@ -28,7 +30,7 @@ class CategoryViewController: UIViewController {
             navigationItem.leftBarButtonItem = nil
         } else {
             navigationItem.title = name
-            navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.left"), style: .plain, target: self, action: #selector(backbtn))
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backbtn))
         }
     }
     

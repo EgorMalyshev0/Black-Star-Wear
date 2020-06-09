@@ -1,10 +1,12 @@
 import UIKit
+import SVProgressHUD
 
 class Loader {
     
     func loadCategories(completion: @escaping([Category]) -> Void) {
         let url = URL(string: "https://blackstarshop.ru/index.php?route=api/v1/categories")!
         let request = URLRequest(url: url)
+        SVProgressHUD.show()
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if let data = data,
             let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments),
@@ -16,6 +18,7 @@ class Loader {
                     }
                 }
                 DispatchQueue.main.async {
+                    SVProgressHUD.dismiss()
                     completion(categories)
                 }
             }
@@ -26,6 +29,7 @@ class Loader {
     func loadProducts(id: String, completion: @escaping([Product]) -> Void) {
         let url = URL(string: "https://blackstarshop.ru/index.php?route=api/v1/products&cat_id=" + id)!
         let request = URLRequest(url: url)
+        SVProgressHUD.show()
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if let data = data,
                 let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments),
@@ -37,6 +41,7 @@ class Loader {
                     }
                 }
                 DispatchQueue.main.async {
+                    SVProgressHUD.dismiss()
                     completion(products)
                 }
             }

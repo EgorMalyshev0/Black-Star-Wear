@@ -44,5 +44,9 @@ class Persistance {
         let allProducts = Array(result)
         return allProducts
     }
+    func retrieveProductAtId(id: String) -> Results<ProductInBag>{
+        let product = realm.objects(ProductInBag.self).filter("id == '\(id)'")
+        return product
+    }
     
 }

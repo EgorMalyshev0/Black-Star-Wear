@@ -7,6 +7,7 @@ class BagViewController: UIViewController {
     @IBOutlet weak var bagTableView: UITableView!
     @IBOutlet weak var finalButton: UIButton!
     @IBOutlet weak var finalCostLabel: UILabel!
+    @IBOutlet weak var noProductsLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,8 +40,10 @@ class BagViewController: UIViewController {
     func changeFinalButtonText() {
         if productsInBag.count == 0 {
             finalButton.setTitle("ВЕРНУТЬСЯ В КАТАЛОГ", for: .normal)
+            noProductsLabel.isHidden = false
         } else {
             finalButton.setTitle("ОФОРМИТЬ ЗАКАЗ", for: .normal)
+            noProductsLabel.isHidden = true
         }
     }
   
@@ -57,11 +60,18 @@ extension BagViewController: UITableViewDelegate, UITableViewDataSource {
         cell.sizeLabel.text = "Размер: " + productsInBag[indexPath.row].size
         cell.priceLabel.text = "\(productsInBag[indexPath.row].price) руб."
         cell.trashButtonAction = { [unowned self] in
-            Persistance.shared.deleteOneProduct(product: self.productsInBag[indexPath.row])
-            self.productsInBag.remove(at: indexPath.row)
-            tableView.reloadData()
-            self.countFinalCost()
-            self.changeFinalButtonText()
+            let alert = UIAlertController(title: nil, message: "Удалить товар из корзины?", preferredStyle: .alert)
+            let yes = UIAlertAction(title: "Да", style: .default) { (action) in
+                Persistance.shared.deleteOneProduct(product: self.productsInBag[indexPath.row])
+                self.productsInBag.remove(at: indexPath.row)
+                tableView.reloadData()
+                self.countFinalCost()
+                self.changeFinalButtonText()
+            }
+            let no = UIAlertAction(title: "Нет", style: .destructive, handler: nil)
+            alert.addAction(yes)
+            alert.addAction(no)
+            self.present(alert, animated: true, completion: nil)
         }
         Loader().getImage(string: productsInBag[indexPath.row].mainImage) { (image) in
             cell.bagProductImageView.image = image
